@@ -3,7 +3,6 @@
         <h2>Создать ошибку</h2>
         <form @submit.prevent="submitBug">
             <input v-model="bug.title" type="text" class="input-field" placeholder="Заголовок" required />
-
             <textarea v-model="bug.description" class="input-field" placeholder="Описание" required></textarea>
 
             <select v-model="bug.severity" class="input-field">
@@ -27,10 +26,19 @@
             </select>
 
             <textarea v-model="bug.steps" class="input-field" placeholder="Шаги воспроизведения"></textarea>
-
             <textarea v-model="bug.environment" class="input-field" placeholder="Информация об окружении"></textarea>
 
             <input type="file" multiple @change="handleFileUpload" class="file-input" />
+
+            <!-- Поле для выбора ответственного -->
+            <div class="mb-3">
+                <label class="block text-gray-700">Ответственный</label>
+                <select v-model="bug.assignee" class="input-field" required>
+                    <option v-for="user in users" :key="user.id" :value="user.id">
+                        {{ user.name }}
+                    </option>
+                </select>
+            </div>
 
             <button type="submit" class="btn-primary">Добавить</button>
         </form>
@@ -38,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const bug = ref({
@@ -50,29 +58,59 @@ const bug = ref({
     steps: '',
     environment: '',
     attachments: [],
+    assignee: null,  // Здесь будет храниться выбранный ответственный
+});
+const users = ref([]);  // Список пользователей
+const bugId = ref(null);
+
+// Загрузка пользователей при монтировании компонента
+onMounted(async () => {
+    try {
+        const response = await axios.get('http://localhost:8000/api/users', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        users.value = response.data;
+
+        // Отладка: выведем список пользователей в консоль
+        console.log('Список пользователей:', users.value);
+
+        // Если пользователей нет, можно задать дефолтного (например, первого из списка)
+        if (users.value.length > 0 && !bug.value.assignee) {
+            bug.value.assignee = users.value[0].id;  // Устанавливаем первого пользователя как ответственного
+        }
+    } catch (error) {
+        console.error('Не удалось загрузить пользователей', error);
+    }
 });
 
+// Обработка файлов
 const handleFileUpload = (event) => {
     bug.value.attachments = event.target.files;
 };
 
+// Отправка формы с ошибкой
 const submitBug = async () => {
     const formData = new FormData();
     Object.keys(bug.value).forEach((key) => {
-        if (key === 'attachments') {
-            for (let file of bug.value.attachments) {
-                formData.append('attachments[]', file);
-            }
+        if (Array.isArray(bug.value[key])) {
+            bug.value[key].forEach((item, index) => {
+                formData.append(`${key}[${index}]`, item);
+            });
         } else {
             formData.append(key, bug.value[key]);
         }
     });
 
-    await axios.post('http://localhost:8000/api/bugs', formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    });
-
-    alert('Ошибка создана!');
+    try {
+        const response = await axios.post('http://localhost:8000/api/bugs', formData, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        bugId.value = response.data.id;
+        alert('Ошибка успешно создана!');
+    } catch (error) {
+        console.error('Ошибка при создании ошибки:', error);
+        alert('Не удалось создать ошибку.');
+    }
 };
 </script>
 

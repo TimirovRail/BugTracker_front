@@ -9,11 +9,22 @@
             <router-link to="/create-bug" class="btn-primary">Создать ошибку</router-link>
             <router-link to="/dashboard" class="btn-primary">Перейти в панель</router-link>
         </div>
+
+        <div class="logout-container">
+            <button @click="logout" class="btn-logout">Выйти из профиля</button>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const logout = () => {
+    localStorage.removeItem('token'); // Удаляем токен
+    router.push('/login'); // Перенаправляем на страницу входа
+};
 </script>
 
 <style scoped>
@@ -55,5 +66,23 @@ p {
 
 .gap-4 {
     gap: 16px;
+}
+
+.logout-container {
+    margin-top: 20px;
+}
+
+.btn-logout {
+    padding: 10px 20px;
+    background-color: #e53e3e;
+    color: white;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+    background-color: #c53030;
 }
 </style>

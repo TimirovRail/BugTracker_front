@@ -1,31 +1,33 @@
 <template>
-        <div class="register-container">
-            <h2 class="text-2xl font-bold text-center mb-4">Вход</h2>
+    <div class="register-container">
+        <h2 class="text-2xl font-bold text-center mb-4">Вход</h2>
 
-            <form @submit.prevent="login">
-                <div class="mb-3">
-                    <label class="block text-gray-700">Email</label>
-                    <input v-model="email" type="email" class="input-field" required placeholder="Введите email" />
-                </div>
+        <form @submit.prevent="login">
+            <div class="mb-3">
+                <label class="block text-gray-700">Email</label>
+                <input v-model="email" type="email" class="input-field" required placeholder="Введите email" />
+            </div>
 
-                <div class="mb-3">
-                    <label class="block text-gray-700">Пароль</label>
-                    <input v-model="password" type="password" class="input-field" required
-                        placeholder="Введите пароль" />
-                </div>
+            <div class="mb-3">
+                <label class="block text-gray-700">Пароль</label>
+                <input v-model="password" type="password" class="input-field" required placeholder="Введите пароль" />
+            </div>
 
-                <button type="submit" class="btn-primary">Войти</button>
+            <button type="submit" class="btn-primary">Войти</button>
 
-                <p v-if="errorMessage" class="text-red-600 text-sm text-center mt-2">
-                    {{ errorMessage }}
-                </p>
-            </form>
-
-            <p class="mt-4 text-center text-gray-600">
-                Нет аккаунта?
-                <router-link to="/register" class="text-blue-600 hover:underline">Регистрация</router-link>
+            <p v-if="errorMessage" class="text-red-600 text-sm text-center mt-2">
+                {{ errorMessage }}
             </p>
-        </div>
+        </form>
+
+        <p class="mt-4 text-center text-gray-600">
+            Нет аккаунта?
+            <router-link to="/register" class="text-blue-600 hover:underline">Регистрация</router-link>
+        </p>
+        <p class="mt-4 text-center text-gray-600">
+            <router-link to="/password/reset" class="text-blue-600 hover:underline">Забыли пароль?</router-link>
+        </p>
+    </div>
 </template>
 
 <script setup>

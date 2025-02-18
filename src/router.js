@@ -5,6 +5,8 @@ import Dashboard from '@/views/DashboardView.vue';
 import Login from '@/views/LoginView.vue';
 import Register from '@/views/RegisterView.vue';
 import { useAuthStore } from '@/stores/auth';
+import ResetPasswordRequest from '@/components/ResetPasswordRequest.vue';
+import ResetPassword from '@/components/ResetPassword.vue';
 
 const routes = [
   { path: '/', component: HomeView },
@@ -12,6 +14,17 @@ const routes = [
   { path: '/dashboard', component: Dashboard },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
+  {
+    path: '/password/reset',
+    name: 'ResetPasswordRequest',  // Страница для запроса на восстановление пароля
+    component: ResetPasswordRequest,
+  },
+  {
+    path: '/password/reset/:token',
+    name: 'ResetPassword',  // Страница для сброса пароля
+    component: ResetPassword,
+    props: true,  // Передаем параметр token через props
+  },
 ];
 
 const router = createRouter({
