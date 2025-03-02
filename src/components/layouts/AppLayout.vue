@@ -6,24 +6,69 @@
         <router-link to="/" class="nav-link">Главная</router-link>
         <router-link to="/create-bug" class="nav-link">Создать ошибку</router-link>
         <router-link to="/dashboard" class="nav-link">Панель</router-link>
-        <router-link to="/login" class="nav-link">Вход</router-link>
-        <router-link to="/register" class="nav-link">Регистрация</router-link>
+        <template v-if="authStore.user">
+          <div class="flex items-center gap-4">
+            <span class="nav-link font-semibold">{{ authStore.user.name }}</span>
+            <router-link 
+              v-if="authStore.user.role === 'admin'" 
+              to="/admin" 
+              class="nav-link"
+            >
+              Профиль админа
+            </router-link>
+            <router-link 
+              v-if="authStore.user.role === 'developer'" 
+              to="/developer" 
+              class="nav-link"
+            >
+              Профиль разработчика
+            </router-link>
+            <router-link 
+              v-if="authStore.user.role === 'tester'" 
+              to="/tester" 
+              class="nav-link"
+            >
+              Профиль тестировщика
+            </router-link>
+            <router-link 
+              v-if="authStore.user.role === 'manager'" 
+              to="/manager" 
+              class="nav-link"
+            >
+              Профиль менеджера
+            </router-link>
+            <button @click="handleLogout" class="nav-link hover:bg-red-500">Выйти</button>
+          </div>
+        </template>
+        <template v-else>
+          <router-link to="/login" class="nav-link">Вход</router-link>
+          <router-link to="/register" class="nav-link">Регистрация</router-link>
+        </template>
       </nav>
     </header>
 
     <main class="p-6">
-      <slot></slot> <!-- Это место для рендеринга дочерних компонентов -->
+      <slot></slot>
     </main>
   </div>
 </template>
 
 <script setup>
-// Здесь можно добавить необходимые скрипты, если нужно.
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const handleLogout = () => {
+  authStore.logout(); 
+  router.push('/login'); 
+};
 </script>
 
 <style scoped>
 .nav-link {
-  color: rgb(0, 0, 0);
+  color: black;
   text-decoration: none;
   padding: 8px 12px;
   border-radius: 4px;

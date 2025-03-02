@@ -1,23 +1,23 @@
 import { defineStore } from 'pinia';
-import api from '../api';
+import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: JSON.parse(localStorage.getItem('user')) || null,
         token: localStorage.getItem('token') || null,
-        refreshToken: localStorage.getItem('refresh_token') || null
+        refreshToken: localStorage.getItem('refresh_token') || null,
     }),
 
     actions: {
         async login(data) {
-            const response = await api.post('/login', data);
-            this.setTokens(response.data.access_token, response.data.refresh_token);
-            this.user = response.data.user;
-            localStorage.setItem('user', JSON.stringify(this.user));
+            this.setTokens(data.token, data.refreshToken);
+            this.user = data.user; 
+            localStorage.setItem('user', JSON.stringify(this.user)); 
+            localStorage.setItem('token', response.data.access_token);
         },
 
         async logout() {
-            await api.post('/logout', {}, {
+            await axios.post('http://localhost:8000/api/logout', {}, {
                 headers: { Authorization: `Bearer ${this.token}` }
             });
             this.clearTokens();
@@ -40,4 +40,3 @@ export const useAuthStore = defineStore('auth', {
         }
     }
 });
-

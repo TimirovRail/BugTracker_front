@@ -34,25 +34,40 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import AppLayout from '@/components/layouts/AppLayout.vue';
+import { useAuthStore } from '@/stores/auth'; 
 
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const router = useRouter();
+const authStore = useAuthStore(); 
 
 const login = async () => {
     try {
-        const response = await axios.post('http://localhost:8000/api/login', {
+        const authResponse = await axios.post('http://localhost:8000/api/login', {
             email: email.value,
             password: password.value,
         });
 
-        localStorage.setItem('token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token); // Сохраняем refresh-токен
+        localStorage.setItem('token', authResponse.data.access_token);
+        localStorage.setItem('refresh_token', authResponse.data.refresh_token);
+
+        const userResponse = await axios.get('http://localhost:8000/api/user', {
+            headers: {
+                Authorization: `Bearer ${authResponse.data.access_token}`,
+            },
+        });
+
+         await authStore.login({
+            token: authResponse.data.access_token,
+            refreshToken: authResponse.data.refresh_token,
+            user: userResponse.data, 
+        });
+
         alert('Вы успешно вошли!');
         router.push('/dashboard');
     } catch (error) {
+        console.error('Ошибка при входе:', error); 
         errorMessage.value = error.response?.data?.message || 'Ошибка входа';
     }
 };
