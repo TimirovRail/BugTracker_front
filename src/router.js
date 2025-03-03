@@ -10,8 +10,11 @@ import TesterProfile from '@/views/profiles/TesterProfile.vue';
 import ManagerProfile from '@/views/profiles/ManagerProfile.vue';
 import UserManagement from '@/views/admin/UserManagement.vue';
 import BugManagement from '@/views/admin/BugManagement.vue';
-import BugDetails from '@/views/bugs/BugDetails.vue'; 
+import BugDetails from '@/views/bugs/BugDetails.vue';
 import CreateProject from '@/views/projects/CreateProject.vue';
+import CommentSection from '@/components/CommentSection.vue'; // Импорт компонента CommentSection
+import ResetPassword from '@/components/ResetPassword.vue'; // Импорт компонента ResetPassword
+import ResetPasswordRequest from '@/components/ResetPasswordRequest.vue'; // Импорт компонента ResetPasswordRequest
 
 const routes = [
   { path: '/', component: HomeView },
@@ -43,6 +46,29 @@ const routes = [
     path: '/projects/create',
     name: 'CreateProject',
     component: CreateProject,
+  },
+
+  // Маршрут для комментариев
+  {
+    path: '/bugs/:id/comments', // Динамический параметр :id для комментариев к багу
+    name: 'CommentSection',
+    component: CommentSection,
+    props: true, // Передаем параметр :id как props
+  },
+
+  // Маршрут для запроса восстановления пароля
+  {
+    path: '/password/reset',
+    name: 'ResetPasswordRequest',
+    component: ResetPasswordRequest,
+  },
+
+  // Маршрут для восстановления пароля
+  {
+    path: '/reset-password/:token', // Динамический параметр :token для восстановления пароля
+    name: 'ResetPassword',
+    component: ResetPassword,
+    props: true, // Передаем параметр :token как props
   },
 ];
 
