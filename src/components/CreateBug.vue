@@ -2,37 +2,66 @@
     <div class="bug-container">
         <h2>Создать ошибку</h2>
         <form @submit.prevent="submitBug">
-            <input v-model="bug.title" type="text" class="input-field" placeholder="Заголовок" required />
-            <textarea v-model="bug.description" class="input-field" placeholder="Описание" required></textarea>
+            <div class="form-group">
+                <label for="title">Заголовок:</label>
+                <input v-model="bug.title" type="text" class="input-field" placeholder="Введите заголовок ошибки"
+                    required />
+            </div>
 
-            <select v-model="bug.severity" class="input-field">
-                <option value="low">Низкая</option>
-                <option value="medium">Средняя</option>
-                <option value="high">Высокая</option>
-                <option value="critical">Критическая</option>
-            </select>
+            <div class="form-group">
+                <label for="description">Подробное описание проблемы:</label>
+                <textarea v-model="bug.description" class="input-field" placeholder="Опишите проблему подробно"
+                    required></textarea>
+            </div>
 
-            <select v-model="bug.priority" class="input-field">
-                <option value="low">Низкий</option>
-                <option value="normal">Обычный</option>
-                <option value="high">Высокий</option>
-            </select>
+            <div class="form-group">
+                <label for="severity">Степень критичности:</label>
+                <select v-model="bug.severity" class="input-field">
+                    <option value="low">Низкая</option>
+                    <option value="medium">Средняя</option>
+                    <option value="high">Высокая</option>
+                    <option value="critical">Критическая</option>
+                </select>
+            </div>
 
-            <select v-model="bug.status" class="input-field">
-                <option value="new">Новая</option>
-                <option value="in_progress">В работе</option>
-                <option value="testing">На проверке</option>
-                <option value="closed">Закрыта</option>
-            </select>
+            <div class="form-group">
+                <label for="priority">Приоритет:</label>
+                <select v-model="bug.priority" class="input-field">
+                    <option value="low">Низкий</option>
+                    <option value="normal">Обычный</option>
+                    <option value="high">Высокий</option>
+                </select>
+            </div>
 
-            <textarea v-model="bug.steps" class="input-field" placeholder="Шаги воспроизведения"></textarea>
-            <textarea v-model="bug.environment" class="input-field" placeholder="Информация об окружении"></textarea>
+            <div class="form-group">
+                <label for="status">Статус:</label>
+                <select v-model="bug.status" class="input-field">
+                    <option value="new">Новая</option>
+                    <option value="in_progress">В работе</option>
+                    <option value="testing">На проверке</option>
+                    <option value="closed">Закрыта</option>
+                </select>
+            </div>
 
-            <input type="file" multiple @change="handleFileUpload" class="file-input" />
+            <div class="form-group">
+                <label for="steps">Шаги воспроизведения:</label>
+                <textarea v-model="bug.steps" class="input-field"
+                    placeholder="Опишите шаги для воспроизведения ошибки"></textarea>
+            </div>
 
-            <!-- Поле для выбора ответственного -->
-            <div class="mb-3">
-                <label class="block text-gray-700">Ответственный</label>
+            <div class="form-group">
+                <label for="environment">Информация об окружении:</label>
+                <textarea v-model="bug.environment" class="input-field"
+                    placeholder="Укажите устройство, ОС, версию ПО и т.д."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="attachments">Прикрепление файлов:</label>
+                <input type="file" multiple @change="handleFileUpload" class="file-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="assignee">Ответственный:</label>
                 <select v-model="bug.assignee" class="input-field" required>
                     <option v-for="user in users" :key="user.id" :value="user.id">
                         {{ user.name }}
@@ -58,12 +87,11 @@ const bug = ref({
     steps: '',
     environment: '',
     attachments: [],
-    assignee: null,  // Здесь будет храниться выбранный ответственный
+    assignee: null, 
 });
-const users = ref([]);  // Список пользователей
+const users = ref([]); 
 const bugId = ref(null);
 
-// Загрузка пользователей при монтировании компонента
 onMounted(async () => {
     try {
         const response = await axios.get('http://localhost:8000/api/users', {
@@ -71,24 +99,20 @@ onMounted(async () => {
         });
         users.value = response.data;
 
-        // Отладка: выведем список пользователей в консоль
         console.log('Список пользователей:', users.value);
 
-        // Если пользователей нет, можно задать дефолтного (например, первого из списка)
         if (users.value.length > 0 && !bug.value.assignee) {
-            bug.value.assignee = users.value[0].id;  // Устанавливаем первого пользователя как ответственного
+            bug.value.assignee = users.value[0].id;  
         }
     } catch (error) {
         console.error('Не удалось загрузить пользователей', error);
     }
 });
 
-// Обработка файлов
 const handleFileUpload = (event) => {
     bug.value.attachments = event.target.files;
 };
 
-// Отправка формы с ошибкой
 const submitBug = async () => {
     const formData = new FormData();
     Object.keys(bug.value).forEach((key) => {
@@ -116,18 +140,30 @@ const submitBug = async () => {
 
 <style scoped>
 .bug-container {
-    max-width: 400px;
+    max-width: 600px;
     margin: 50px auto;
     padding: 30px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    text-align: left;
 }
 
 h2 {
     margin-bottom: 20px;
     font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
     font-weight: bold;
     color: #333;
 }

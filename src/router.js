@@ -12,9 +12,9 @@ import UserManagement from '@/views/admin/UserManagement.vue';
 import BugManagement from '@/views/admin/BugManagement.vue';
 import BugDetails from '@/views/bugs/BugDetails.vue';
 import CreateProject from '@/views/projects/CreateProject.vue';
-import CommentSection from '@/components/CommentSection.vue'; // Импорт компонента CommentSection
-import ResetPassword from '@/components/ResetPassword.vue'; // Импорт компонента ResetPassword
-import ResetPasswordRequest from '@/components/ResetPasswordRequest.vue'; // Импорт компонента ResetPasswordRequest
+import CommentSection from '@/components/CommentSection.vue'; 
+import ResetPassword from '@/components/ResetPassword.vue'; 
+import ResetPasswordRequest from '@/components/ResetPasswordRequest.vue'; 
 
 const routes = [
   { path: '/', component: HomeView },
@@ -23,24 +23,20 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/register', component: Register },
 
-  // Маршруты для администратора
   { path: '/admin', component: AdminProfile },
   { path: '/admin/users', component: UserManagement },
   { path: '/admin/bugs', component: BugManagement },
 
-  // Маршруты для разработчика
   { path: '/developer', component: DeveloperProfile },
   {
-    path: '/bugs/:id', // Динамический параметр :id
+    path: '/bugs/:id', 
     name: 'BugDetails',
     component: BugDetails,
-    props: true, // Передаем параметр :id как props
+    props: true,
   },
 
-  // Маршруты для тестировщика
   { path: '/tester', component: TesterProfile },
 
-  // Маршруты для менеджера
   { path: '/manager', component: ManagerProfile },
   {
     path: '/projects/create',
@@ -48,27 +44,24 @@ const routes = [
     component: CreateProject,
   },
 
-  // Маршрут для комментариев
   {
-    path: '/bugs/:id/comments', // Динамический параметр :id для комментариев к багу
+    path: '/bugs/:id/comments',
     name: 'CommentSection',
     component: CommentSection,
-    props: true, // Передаем параметр :id как props
+    props: true, 
   },
 
-  // Маршрут для запроса восстановления пароля
   {
     path: '/password/reset',
     name: 'ResetPasswordRequest',
     component: ResetPasswordRequest,
   },
 
-  // Маршрут для восстановления пароля
   {
-    path: '/reset-password/:token', // Динамический параметр :token для восстановления пароля
+    path: '/reset-password/:token', 
     name: 'ResetPassword',
     component: ResetPassword,
-    props: true, // Передаем параметр :token как props
+    props: true,
   },
 ];
 

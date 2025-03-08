@@ -56,7 +56,6 @@ const user = authStore.user;
 const bugs = ref([]);
 const loading = ref(true);
 
-// Загрузка списка багов
 const loadBugs = async () => {
   try {
       const response = await axios.get('http://localhost:8000/api/bugs', {
@@ -70,7 +69,6 @@ const loadBugs = async () => {
   }
 };
 
-// Обновление статуса бага
 const updateBugStatus = async (bug) => {
   try {
       await axios.put(`http://localhost:8000/api/bugs/${bug.id}`, {
@@ -84,12 +82,10 @@ const updateBugStatus = async (bug) => {
   }
 };
 
-// Переход на страницу с деталями бага
 const viewBugDetails = (bugId) => {
   router.push({ name: 'BugDetails', params: { id: bugId } });
 };
 
-// Добавление комментария к багу
 const addComment = async (bugId) => {
   const comment = prompt('Введите ваш комментарий:');
   if (comment) {
@@ -106,7 +102,6 @@ const addComment = async (bugId) => {
   }
 };
 
-// Загрузка багов при монтировании компонента
 onMounted(() => {
   loadBugs();
 });

@@ -51,7 +51,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Стиль для контейнера */
 .text-center {
     text-align: center;
 }

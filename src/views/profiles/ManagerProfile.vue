@@ -62,7 +62,6 @@ const user = authStore.user;
 const projects = ref([]);
 const loading = ref(false);
 
-// Загрузка списка проектов
 const loadProjects = async () => {
   loading.value = true;
   try {
@@ -78,7 +77,6 @@ const loadProjects = async () => {
   }
 };
 
-// Обновление статуса проекта
 const updateProjectStatus = async (project) => {
   try {
     await axios.put(`http://localhost:8000/api/projects/${project.id}`, {
@@ -92,12 +90,10 @@ const updateProjectStatus = async (project) => {
   }
 };
 
-// Переход на страницу с деталями проекта
 const viewProjectDetails = (projectId) => {
   router.push({ name: 'ProjectDetails', params: { id: projectId } });
 };
 
-// Удаление проекта
 const deleteProject = async (projectId) => {
   if (confirm('Вы уверены, что хотите удалить проект?')) {
     try {
@@ -105,14 +101,13 @@ const deleteProject = async (projectId) => {
         headers: { Authorization: `Bearer ${authStore.token}` }
       });
       alert('Проект удален!');
-      loadProjects(); // Перезагружаем список проектов
+      loadProjects(); 
     } catch (error) {
       console.error('Ошибка при удалении проекта:', error);
     }
   }
 };
 
-// Загрузка проектов при монтировании компонента
 onMounted(() => {
   loadProjects();
 });

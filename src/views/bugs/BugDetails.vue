@@ -13,8 +13,10 @@
             <div v-for="comment in bug.comments" :key="comment.id" class="comment">
                 <p><strong>{{ comment.user.name }}:</strong> {{ comment.content }}</p>
                 <small>{{ comment.created_at }}</small>
+                <button v-if="comment.user.id === authStore.user.id" @click="deleteComment(comment.id)">Удалить</button>
             </div>
             <textarea v-model="newComment" placeholder="Добавьте комментарий"></textarea>
+            <input type="file" @change="handleFileUpload" multiple />
             <button @click="addComment">Добавить комментарий</button>
         </div>
     </div>
@@ -30,6 +32,7 @@ const route = useRoute();
 const authStore = useAuthStore();
 const bug = ref({});
 const newComment = ref('');
+const files = ref([]);
 
 const loadBugDetails = async () => {
     try {
@@ -46,20 +49,45 @@ const loadBugDetails = async () => {
 
 const addComment = async () => {
     try {
+        const formData = new FormData();
+        formData.append('content', newComment.value);
+        files.value.forEach((file) => {
+            formData.append('attachments[]', file);
+        });
+
         const response = await axios.post(
             `http://localhost:8000/api/bugs/${route.params.id}/comments`,
-            { content: newComment.value },
+            formData,
             {
                 headers: {
                     Authorization: `Bearer ${authStore.token}`,
+                    'Content-Type': 'multipart/form-data',
                 },
             }
         );
         bug.value.comments.push(response.data);
         newComment.value = '';
+        files.value = [];
     } catch (error) {
         console.error('Ошибка при добавлении комментария:', error);
     }
+};
+
+const deleteComment = async (commentId) => {
+    try {
+        await axios.delete(`http://localhost:8000/api/comments/${commentId}`, {
+            headers: {
+                Authorization: `Bearer ${authStore.token}`,
+            },
+        });
+        bug.value.comments = bug.value.comments.filter((comment) => comment.id !== commentId);
+    } catch (error) {
+        console.error('Ошибка при удалении комментария:', error);
+    }
+};
+
+const handleFileUpload = (event) => {
+    files.value = Array.from(event.target.files);
 };
 
 onMounted(() => {

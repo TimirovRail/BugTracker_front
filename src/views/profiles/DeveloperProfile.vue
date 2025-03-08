@@ -3,6 +3,23 @@
     <h1>Панель разработчика</h1>
     <p>Добро пожаловать, {{ user.name }}! Вы авторизованы как разработчик.</p>
 
+    <div class="filters">
+      <label for="status-filter">Фильтр по статусу:</label>
+      <select id="status-filter" v-model="statusFilter" @change="loadAssignedBugs">
+        <option value="all">Все</option>
+        <option value="new">Новая</option>
+        <option value="in_progress">В работе</option>
+        <option value="testing">На тестировании</option>
+        <option value="closed">Закрыта</option>
+      </select>
+
+      <label for="sort-priority">Сортировка по приоритету:</label>
+      <select id="sort-priority" v-model="sortPriority" @change="sortBugs">
+        <option value="asc">По возрастанию</option>
+        <option value="desc">По убыванию</option>
+      </select>
+    </div>
+
     <div class="assigned-bugs">
       <h2>Назначенные ошибки</h2>
       <table>
@@ -34,6 +51,10 @@
           </tr>
         </tbody>
       </table>
+
+      <div v-if="assignedBugs.length === 0" class="no-bugs">
+        <p>Нет назначенных ошибок.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -48,6 +69,8 @@ const authStore = useAuthStore();
 const router = useRouter();
 const user = authStore.user;
 const assignedBugs = ref([]);
+const statusFilter = ref('all');
+const sortPriority = ref('asc');
 
 const loadAssignedBugs = async () => {
   try {
@@ -55,10 +78,22 @@ const loadAssignedBugs = async () => {
       headers: {
         Authorization: `Bearer ${authStore.token}`,
       },
+      params: {
+        status: statusFilter.value === 'all' ? null : statusFilter.value,
+      },
     });
     assignedBugs.value = response.data;
+    sortBugs();
   } catch (error) {
     console.error('Ошибка при загрузке назначенных ошибок:', error);
+  }
+};
+
+const sortBugs = () => {
+  if (sortPriority.value === 'asc') {
+    assignedBugs.value.sort((a, b) => a.priority.localeCompare(b.priority));
+  } else {
+    assignedBugs.value.sort((a, b) => b.priority.localeCompare(a.priority));
   }
 };
 
@@ -89,6 +124,19 @@ onMounted(() => {
 <style scoped>
 .developer-profile {
   padding: 20px;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.filters label {
+  margin-right: 10px;
+}
+
+.filters select {
+  padding: 5px;
+  margin-right: 20px;
 }
 
 .assigned-bugs {
@@ -125,5 +173,11 @@ button {
 
 button:hover {
   background-color: #3B82F6;
+}
+
+.no-bugs {
+  margin-top: 20px;
+  text-align: center;
+  color: #666;
 }
 </style>
